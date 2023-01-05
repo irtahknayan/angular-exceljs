@@ -1,4 +1,7 @@
 import { Component } from '@angular/core';
+import { ExcelModel } from "../../models/ExcelModel";
+import { ExportsService } from "../../services/exports.service";
+
 interface Country {
   id?: number;
   name: string;
@@ -96,14 +99,15 @@ export class ExcelExportsComponent {
   pageSize = 4;
   collectionSize = COUNTRIES.length;
   countries: Country[];
-  countriesColumns: any[]= ["#","Country","	Area","Population"
-    // { id: 0, label: "#" },
-    // { id: 1, label: "Country" },
-    // { id: 2, label: "	Area" },
-    // { id: 3, label: "Population" }
+  countriesColumns: any[] = [
+    // "#", "Country", "	Area", "Population"
+    { id: 0, label: "#" },
+    { id: 1, label: "Country" },
+    { id: 2, label: "	Area" },
+    { id: 3, label: "Population" }
   ];
-
-  constructor() {
+  excelModel: ExcelModel = { fileName: "", worksheetColumns: [], worksheetRows: [], discriminator: "" };
+  constructor(private exportsService: ExportsService) {
     this.refreshCountries();
   }
 
@@ -112,5 +116,43 @@ export class ExcelExportsComponent {
       (this.page - 1) * this.pageSize,
       (this.page - 1) * this.pageSize + this.pageSize,
     );
+  }
+
+
+
+  public exportToExcel() {
+    //display message
+    this.excelModel.fileName = "Exported_Countries";
+    this.excelModel.worksheetColumns = [];
+    this.excelModel.worksheetRows = [];
+
+    //define required columns and its width to include in excel
+    this.countriesColumns.forEach(item => {
+      if (item.id != null) {
+        this.excelModel.worksheetColumns.push({ header: item.label, key: item.id, width: 30 });
+      }
+    });
+
+    //define required column values to include in excel
+    this.countries.forEach(item => {
+      var record: Record<string, any> = {};
+      this.excelModel.worksheetColumns.forEach(column => {
+        var columnKey = column.key;
+        var columnValue = item[columnKey];
+        record[columnKey] = columnValue;
+      });
+      this.excelModel.worksheetRows.push(record);
+    });
+    console.log(this.excelModel);
+    //var result = this.exportsService.exportDataToExcel(this.excelModel);
+
+    // if (result == false) {
+    //   alert("Invalid data");
+    // } else {
+    //   alert("Successfully exported");
+    // }
+
+
+
   }
 }

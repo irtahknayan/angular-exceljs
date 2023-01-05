@@ -4,7 +4,7 @@
 <table class="table table-dark table-sm">
 	<thead>
 		<tr>
-			<th scope="col" *ngFor="let column of countriesColumns">{{column}}</th>
+			<th scope="col" *ngFor="let column of countriesColumns">{{column.label}}</th>
 		</tr>
 		<!-- <tr>
 			<th scope="col">#</th>
@@ -46,5 +46,5 @@
 	</select>
 </div>
 <div style="text-align: center;">
-	<button type="button" class="btn btn-danger">Export to Excel</button>
+	<button type="button" class="btn btn-danger" (click)="exportToExcel()">Export to Excel</button>
 </div>
