@@ -102,11 +102,13 @@ export class ExcelExportsComponent {
   countriesColumns: any[] = [
     // "#", "Country", "	Area", "Population"
     { id: 0, label: "#" },
-    { id: 1, label: "Country" },
-    { id: 2, label: "	Area" },
-    { id: 3, label: "Population" }
+    { id: 'name', label: "Country" },
+    { id: 'area', label: "	Area" },
+    { id: 'population', label: "Population" }
   ];
   excelModel: ExcelModel = { fileName: "", worksheetColumns: [], worksheetRows: [], discriminator: "" };
+  showFailure: boolean = false;
+  showSuccess: boolean = false;
   constructor(private exportsService: ExportsService) {
     this.refreshCountries();
   }
@@ -128,7 +130,7 @@ export class ExcelExportsComponent {
 
     //define required columns and its width to include in excel
     this.countriesColumns.forEach(item => {
-      if (item.id != null) {
+      if (item.id != 0) {
         this.excelModel.worksheetColumns.push({ header: item.label, key: item.id, width: 30 });
       }
     });
@@ -144,13 +146,15 @@ export class ExcelExportsComponent {
       this.excelModel.worksheetRows.push(record);
     });
     console.log(this.excelModel);
-    //var result = this.exportsService.exportDataToExcel(this.excelModel);
+    var result = this.exportsService.exportDataToExcel(this.excelModel);
 
-    // if (result == false) {
-    //   alert("Invalid data");
-    // } else {
-    //   alert("Successfully exported");
-    // }
+    if (result == false) {
+      alert("Invalid file data.");
+      this.showFailure = true;
+    } else {
+       alert("File exported successfully.");
+      this.showSuccess = true;
+    }
 
 
 
